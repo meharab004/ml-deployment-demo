@@ -1,0 +1,35 @@
+name: ML Deployment Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  ml-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install torch
+          pip install onnx onnxscript onnxruntime
+
+      - name: Train model
+        run: python train.py
+
+      - name: Export to ONNX
+        run: python export_onnx.py
+
+      - name: Quantize model
+        run: python quantize.py
+
+      - name: Run inference
+        run: python inference.py
